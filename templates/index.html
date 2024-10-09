@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Loan Application</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body {
+            background-color: #e0f7fa; /* Light blue background */
+        }
+    </style>
+</head>
+<body>
+    <div class="container mt-5">
+        <h1 class="text-center mb-4">Loan Application</h1>
+        <form method="POST">
+            <div class="form-group">
+                <label for="customer_id">Customer ID:</label>
+                <input type="text" id="customer_id" name="customer_id" class="form-control" required>
+            </div>
+            <button type="submit" class="btn btn-primary btn-block">Submit</button>
+        </form>
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="mt-3">
+                    <ul class="list-group">
+                    {% for category, message in messages %}
+                        <li class="list-group-item list-group-item-{{ category }}">{{ message }}</li>
+                    {% endfor %}
+                    </ul>
+                </div>
+            {% endif %}
+        {% endwith %}
+    </div>
+</body>
+</html>

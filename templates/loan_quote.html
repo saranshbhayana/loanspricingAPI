@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Loan Quote</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f8ff;
+            color: #333;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            margin-top: 50px;
+        }
+
+        h1 {
+            color: #007bff;
+            text-align: center;
+        }
+
+        p {
+            font-size: 16px;
+            margin: 10px 0;
+        }
+
+        button {
+            background-color: #007bff;
+            color: white;
+            padding: 10px 20px;
+            margin: 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        #successMessage {
+            display: none;
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        /* Modal styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.5);
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background-color: #fff;
+            padding: 20px;
+            border: 1px solid #007bff;
+            border-radius: 5px;
+            width: 300px;
+            text-align: center;
+        }
+
+        #newOffer {
+            display: none;
+            text-align: center;
+            margin-top: 20px;
+            background-color: #e0f7fa;
+            padding: 20px;
+            border: 2px solid #007bff;
+            border-radius: 8px;
+        }
+    </style>
+    <script>
+        let customer_id = "{{ customer_id }}"; // Capture customer_id from the template
+        console.log("Customer ID:", customer_id);
+    
+        function checkUserAction() {
+            setTimeout(() => {
+                if (!window.userClicked) {
+                    // Show modal for new quote if user hasn't interacted
+                    document.getElementById("quoteModal").style.display = "flex";
+                }
+            }, 5000); // Wait for 5 seconds
+        }
+    
+        function userAction() {
+            window.userClicked = true; // Mark that the user has interacted
+        }
+    
+        function proceedToApply() {
+            userAction(); // Mark user action
+    
+            // Hide all elements except the success message
+            document.querySelector('.container').style.display = 'none'; // Hide main container
+            document.getElementById("quoteModal").style.display = 'none'; // Hide modal
+            document.getElementById("newOffer").style.display = 'none'; // Hide new offer section
+
+            // Display success message
+            const successMessage = document.getElementById("successMessage");
+            successMessage.style.display = "block"; // Show the success message
+    
+            // Send data to the server (if needed)
+            fetch(`/save_event`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    customer_id: "{{ customer_id }}",
+                    loan_amount: "{{ quote_details['Loan Amount'] }}",
+                    apr: "{{ quote_details['APR'] }}",
+                    tenure: "{{ quote_details['Tenure'] }}"
+                })
+            }).then(response => {
+                if (response.ok) {
+                    console.log("Loan application saved successfully.");
+                }
+            });
+        }
+    
+        function getNewQuote() {
+            // Send request to backend for a new offer
+            fetch(`/get_new_offer`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    loan_amount: "{{ quote_details['Loan Amount'] }}", // Current loan amount
+                    apr: "{{ quote_details['APR'] }}", // Current APR
+                    customer_id: "{{ customer_id }}"
+                })
+            }).then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Hide modal
+                    document.getElementById("quoteModal").style.display = "none";
+
+                    // Update the new offer section with new quote details
+                    const newOfferDiv = document.getElementById("newOffer");
+                    newOfferDiv.innerHTML = `
+                        <h2>Your Next Best Offer</h2>
+                        <p><strong>Loan Amount:</strong> ${data.new_loan_amount}</p>
+                        <p><strong>APR:</strong> ${data.new_apr}%</p>
+                        <p><strong>Tenure:</strong> ${data.new_tenure} months</p>
+                        <div style="text-align: center;">
+                            <button onclick="closeNewOffer()">Cancel</button>
+                            <button onclick="proceedToApply()">Proceed to Apply</button>
+                        </div>
+                    `;
+                    newOfferDiv.style.display = "block"; // Show the new offer
+                } else {
+                    // If no new offer is found, just hide the modal
+                    document.getElementById("quoteModal").style.display = "none";
+                    alert(data.message);
+                }
+            }).catch(error => {
+                console.error('Error fetching new offer:', error);
+                alert("An error occurred while fetching the new offer. Please try again.");
+            });
+        }
+
+        function closeNewOffer() {
+            document.getElementById("newOffer").style.display = "none"; // Hide new offer
+        }
+    
+        function closeModal() {
+            document.getElementById("quoteModal").style.display = "none"; // Hide modal
+        }
+    </script>
+    
+</head>
+<body onload="checkUserAction()">
+    <div class="container">
+        <h1>Your Loan Quote</h1>
+        <p><strong>Loan Amount:</strong> {{ quote_details['Loan Amount'] }}</p>
+        <p><strong>APR:</strong> {{ quote_details['APR'] }}%</p>
+        <p><strong>Tenure:</strong> {{ quote_details['Tenure'] }} months</p>
+        <div style="text-align: center;">
+            <button onclick="userAction(); window.location.href='/'">Go Back to Home</button>
+            <button onclick="proceedToApply()">Proceed to Apply</button>
+        </div>
+    </div>
+
+    <!-- Modal for New Quote -->
+    <div id="quoteModal" class="modal">
+        <div class="modal-content">
+            <h2>Not happy with your quote?</h2>
+            <p>You may be eligible for a better loan offer.</p>
+            <button onclick="getNewQuote()">Get New Offer</button> <!-- New Offer button -->
+            <button onclick="closeModal()">Cancel</button> <!-- Cancel button -->
+        </div>
+    </div>
+
+    <!-- Success Message -->
+    <div id="successMessage">
+        <h2>Congratulations!</h2>
+        <p>Your loan application has been successful.</p>
+        <p>We will contact you soon with further details.</p>
+    </div>
+
+    <!-- Section to display the new offer -->
+    <div id="newOffer">
+        <!-- New offer details will be injected here -->
+    </div>
+</body>
+</html>

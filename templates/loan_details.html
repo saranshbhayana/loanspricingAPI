@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Loan Details</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body {
+            background-color: #e0f7fa; /* Light blue background */
+        }
+    </style>
+</head>
+<body>
+    <div class="container mt-5">
+        <h1 class="text-center mb-4">Loan Details for Customer ID: {{ customer_id }}</h1>
+        <form action="{{ url_for('loan_details', customer_id=customer_id) }}" method="post">
+            <div class="form-group">
+                <label for="earnings">Annual Earnings:</label>
+                <input type="number" id="earnings" name="earnings" class="form-control" required min="0" step="1000">
+            </div>
+            <div class="form-group">
+                <label for="spends">Monthly Expenses:</label>
+                <input type="number" id="spends" name="spends" class="form-control" required min="0" step="100">
+            </div>
+            <div class="form-group">
+                <label for="rental">Monthly Rental Expenses:</label>
+                <input type="number" id="rental" name="rental" class="form-control" required min="0" step="100">
+            </div>
+            <div class="form-group">
+                <label for="dependents">Number of Dependents:</label>
+                <input type="number" id="dependents" name="dependents" class="form-control" required min="0" max="10">
+            </div>
+            <div class="form-group">
+                <label for="maritalStatus">Marital Status:</label>
+                <select id="maritalStatus" name="maritalStatus" class="form-control" required>
+                    <option value="">Select an option</option>
+                    <option value="single">Single</option>
+                    <option value="married">Married</option>
+                </select>
+            </div>
+            <button type="submit" class="btn btn-primary btn-block">Next</button>
+        </form>
+    </div>
+</body>
+</html>

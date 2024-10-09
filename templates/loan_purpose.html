@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Loan Purpose</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body {
+            background-color: #e0f7fa; /* Light blue background */
+        }
+        h1 {
+            margin-bottom: 30px;
+            text-align: center;
+            color: #007bff; /* Bootstrap primary color */
+        }
+    </style>
+</head>
+<body>
+    <div class="container mt-5">
+        <h1>Loan Purpose and Amount</h1>
+        <form method="POST">
+            <div class="form-group">
+                <label for="loan_purpose">Select Loan Purpose:</label>
+                <select name="loan_purpose" id="loan_purpose" class="form-control" required>
+                    <option value="Home Improvement">Home Improvement</option>
+                    <option value="Home Loan">Home Loan</option>
+                    <option value="Car Loan">Car Loan</option>
+                    <option value="Debt Consolidation">Debt Consolidation</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="loan_amount">Loan Amount:</label>
+                <input type="number" name="loan_amount" id="loan_amount" class="form-control" required>
+            </div>
+            <button type="submit" class="btn btn-primary btn-block">Next</button>
+        </form>
+    </div>
+</body>
+</html>
